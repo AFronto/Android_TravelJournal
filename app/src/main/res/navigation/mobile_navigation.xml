@@ -12,32 +12,20 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="hu.bme.aut.android.traveljournal.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_map"
+        android:name="hu.bme.aut.android.traveljournal.ui.map.MapFragment"
+        android:label="@string/menu_map"
+        tools:layout="@layout/fragment_map" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="hu.bme.aut.android.traveljournal.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_my_journals"
+        android:name="hu.bme.aut.android.traveljournal.ui.my_journals.MyJournalsFragment"
+        android:label="@string/menu_my_journals"
+        tools:layout="@layout/fragment_my_journals" />
 
     <fragment
-        android:id="@+id/nav_tools"
-        android:name="hu.bme.aut.android.traveljournal.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
-        tools:layout="@layout/fragment_tools" />
-
-    <fragment
-        android:id="@+id/nav_share"
-        android:name="hu.bme.aut.android.traveljournal.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
-
-    <fragment
-        android:id="@+id/nav_send"
-        android:name="hu.bme.aut.android.traveljournal.ui.send.SendFragment"
-        android:label="@string/menu_send"
-        tools:layout="@layout/fragment_send" />
+        android:id="@+id/nav_profile"
+        android:name="hu.bme.aut.android.traveljournal.ui.profile.ProfileFragment"
+        android:label="@string/menu_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

@@ -1,4 +1,4 @@
-package hu.bme.aut.android.traveljournal.ui.share
+package hu.bme.aut.android.traveljournal.ui.my_journals
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import hu.bme.aut.android.traveljournal.R
 
-class ShareFragment : Fragment() {
+class MyJournalsFragment : Fragment() {
 
-    private lateinit var shareViewModel: ShareViewModel
+    private lateinit var myJournalsViewModel: MyJournalsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        shareViewModel =
-            ViewModelProviders.of(this).get(ShareViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_share, container, false)
-        val textView: TextView = root.findViewById(R.id.text_share)
-        shareViewModel.text.observe(this, Observer {
+        myJournalsViewModel =
+            ViewModelProviders.of(this).get(MyJournalsViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_my_journals, container, false)
+        val textView: TextView = root.findViewById(R.id.text_my_journals)
+        myJournalsViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root
