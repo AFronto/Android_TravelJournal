@@ -15,8 +15,9 @@ import androidx.core.view.GravityCompat
 import androidx.navigation.ui.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_journals.*
+import kotlinx.android.synthetic.main.nav_header_journals.view.*
 
-class JournalsActivity : AppCompatActivity() {
+class JournalsActivity : BaseActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -33,6 +34,9 @@ class JournalsActivity : AppCompatActivity() {
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
+        navView.getHeaderView(0).tvUserName.text = userName
+        navView.getHeaderView(0).tvEmail.text = userEmail
+
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
