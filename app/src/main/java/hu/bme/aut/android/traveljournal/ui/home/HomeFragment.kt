@@ -18,7 +18,27 @@ import hu.bme.aut.android.traveljournal.adapter.JournalsAdapter
 import hu.bme.aut.android.traveljournal.data.Journal
 import kotlinx.android.synthetic.main.fragment_home.*
 
-class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
+class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
+    JournalsAdapter.JournalClickListener {
+    override fun onItemClick(journal: Journal) {
+        Log.d("ItemClicked", "${journal.title}")
+    }
+
+    override fun onItemDownVote(journal: Journal) {
+        db.collection("journals").document(journal.id!!)
+            .update("rating", (journal.rating!! - 1))
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+    }
+
+    override fun onItemUpVote(journal: Journal) {
+        db.collection("journals").document(journal.id!!)
+            .update("rating", (journal.rating!! + 1))
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+
+    }
+
     override fun onQueryTextSubmit(p0: String?): Boolean {
         return false
     }
@@ -32,6 +52,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private lateinit var journalsAdapter: JournalsAdapter
+    val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,10 +66,11 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         journalSearchView.setOnQueryTextListener(this)
-        super.onStart()
+
         if (context != null) {
 
             journalsAdapter = JournalsAdapter(context!!, mutableListOf())
+            journalsAdapter.itemClickListener = this
 
             rvJournals.layoutManager = LinearLayoutManager(context).apply {
                 reverseLayout = true
@@ -60,7 +82,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun initJournalsListener() {
-        val db = FirebaseFirestore.getInstance()
         db.collection("journals")
             .addSnapshotListener { value, e ->
                 if (e != null) {
@@ -71,7 +92,24 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
                 for (doc in value!!.documentChanges) {
                     when (doc.type) {
-                        DocumentChange.Type.ADDED -> journalsAdapter.addJournal(doc.document.toObject(Journal::class.java))
+                        DocumentChange.Type.ADDED -> {
+                            var newJournal = doc.document.toObject(
+                                Journal::class.java
+                            )
+                            newJournal.id = doc.document.id
+                            journalsAdapter.addJournal(
+                                newJournal
+                            )
+                        }
+                        DocumentChange.Type.MODIFIED -> {
+                            var modJournal = doc.document.toObject(
+                                Journal::class.java
+                            )
+                            modJournal.id = doc.document.id
+                            journalsAdapter.updateJournal(
+                                modJournal
+                            )
+                        }
                     }
                 }
 

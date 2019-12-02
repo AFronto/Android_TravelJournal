@@ -9,45 +9,74 @@
     card_view:cardBackgroundColor="@color/primary_light"
     card_view:cardCornerRadius="12dp">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp">
 
 
-            <TextView
-                android:id="@+id/tvJournalTitle"
-                android:layout_width="wrap_content"
-                android:maxWidth="260dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:textSize="20sp"
-                android:textColor="@color/primary_text"
-                android:layout_alignParentStart="true"
-                android:textStyle="bold"
-                android:text="Title"/>
+        <TextView
+            android:id="@+id/tvJournalTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/primary_text"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            card_view:layout_constrainedWidth="true"
+            card_view:layout_constraintEnd_toStartOf="@+id/downVote"
+            card_view:layout_constraintHorizontal_bias="0"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvJournalAuthor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tvJournalTitle"
-                android:text="Author"/>
+        <TextView
+            android:id="@+id/tvJournalAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Author"
+            card_view:layout_constrainedWidth="true"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@id/tvJournalTitle" />
 
 
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/downVote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/ic_arrow_down"
+            card_view:layout_constrainedWidth="true"
+            card_view:layout_constraintTop_toBottomOf="@id/tvJournalRating"
+            card_view:layout_constraintEnd_toStartOf="@id/upVote" />
 
         <TextView
             android:id="@+id/tvJournalRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:textColor="@color/primary_text"
-            android:drawableRight="@drawable/ic_rate_star"
-            android:layout_alignBaseline="@id/tvJournalTitle"
+            android:layout_marginEnd="30dp"
             android:text="Rating"
-            android:layout_alignParentEnd="true"
-            android:textStyle="bold" />
+            android:textColor="@color/primary_text"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            card_view:layout_constrainedWidth="true"
+            card_view:layout_constraintBaseline_toBaselineOf="@id/tvJournalTitle"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="1"
+            card_view:layout_constraintStart_toEndOf="@id/tvJournalTitle"/>
 
-    </RelativeLayout>
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/upVote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/ic_arrow_up"
+            card_view:layout_constrainedWidth="true"
+            card_view:layout_constraintTop_toBottomOf="@id/tvJournalRating"
+            card_view:layout_constraintEnd_toEndOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

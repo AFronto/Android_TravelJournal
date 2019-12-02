@@ -19,10 +19,28 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
     private var filteredJournals = mutableListOf<Journal>()
     private var actualFilter = ""
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    var itemClickListener: JournalClickListener? = null
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvAuthor: TextView = itemView.tvJournalAuthor
         val tvTitle: TextView = itemView.tvJournalTitle
         val tvRating: TextView = itemView.tvJournalRating
+
+        var journal: Journal? = null
+
+        init {
+            itemView.setOnClickListener {
+                journal?.let { journal -> itemClickListener?.onItemClick(journal) }
+            }
+
+            itemView.downVote.setOnClickListener {
+                journal?.let { journal -> itemClickListener?.onItemDownVote(journal) }
+            }
+
+            itemView.upVote.setOnClickListener {
+                journal?.let { journal -> itemClickListener?.onItemUpVote(journal) }
+            }
+        }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
@@ -34,6 +52,8 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val tmpJournal = filteredJournals[position]
+        viewHolder.journal = tmpJournal
+
         viewHolder.tvAuthor.text = "Written by: ${tmpJournal.author}"
         viewHolder.tvTitle.text = tmpJournal.title
         viewHolder.tvRating.text = tmpJournal.rating.toString()
@@ -51,6 +71,14 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
         filter(actualFilter) {}
     }
 
+    fun updateJournal(journal: Journal) {
+        journal ?: return
+
+        journalList[journalList.indexOfFirst { old -> old.id == journal.id }] = journal
+        journalList.sortBy { j -> j.rating }
+        filter(actualFilter) {}
+    }
+
     private fun setAnimation(viewToAnimate: View, position: Int) {
         if (position > lastPosition) {
             val animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left)
@@ -60,7 +88,7 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
     }
 
     fun filter(constraint: String?, onNothingFound: (() -> Unit)?) {
-        actualFilter = constraint?:""
+        actualFilter = constraint ?: ""
         actualFilter = actualFilter.toLowerCase()
         filteredJournals.clear()
         if (actualFilter.isNullOrBlank()) {
@@ -70,9 +98,14 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
                 journalList.filter { it.title!!.toLowerCase().contains(actualFilter) }
             filteredJournals.addAll(searchResults)
         }
-        if (journalList.isNullOrEmpty())
+        if (filteredJournals.isNullOrEmpty())
             onNothingFound?.invoke()
         notifyDataSetChanged()
     }
 
+    interface JournalClickListener {
+        fun onItemClick(journal: Journal)
+        fun onItemDownVote(journal: Journal)
+        fun onItemUpVote(journal: Journal)
+    }
 }
