@@ -13,7 +13,7 @@ abstract class BaseActivity : AppCompatActivity() {
     private val firebaseUser: FirebaseUser?
         get() = FirebaseAuth.getInstance().currentUser
 
-    protected val uid: String?
+    val uid: String?
         get() = firebaseUser?.uid
 
     protected val userName: String?

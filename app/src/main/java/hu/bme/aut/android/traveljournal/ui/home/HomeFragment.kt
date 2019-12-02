@@ -16,43 +16,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.adapter.JournalsAdapter
 import hu.bme.aut.android.traveljournal.data.Journal
+import hu.bme.aut.android.traveljournal.ui.base.BaseJournalListFragment
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.searchable_journal_list.*
 
-class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
-    JournalsAdapter.JournalClickListener {
-    override fun onItemClick(journal: Journal) {
-        Log.d("ItemClicked", "${journal.title}")
-    }
-
-    override fun onItemDownVote(journal: Journal) {
-        db.collection("journals").document(journal.id!!)
-            .update("rating", (journal.rating!! - 1))
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-    }
-
-    override fun onItemUpVote(journal: Journal) {
-        db.collection("journals").document(journal.id!!)
-            .update("rating", (journal.rating!! + 1))
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-
-    }
-
-    override fun onQueryTextSubmit(p0: String?): Boolean {
-        return false
-    }
-
-    override fun onQueryTextChange(s: String?): Boolean {
-        journalsAdapter.filter(s) {
-            // update UI on nothing found
-            Toast.makeText(context, "Nothing Found", Toast.LENGTH_SHORT).show()
-        }
-        return false
-    }
-
-    private lateinit var journalsAdapter: JournalsAdapter
-    val db = FirebaseFirestore.getInstance()
+class HomeFragment : BaseJournalListFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,25 +31,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
         return root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        journalSearchView.setOnQueryTextListener(this)
-
-        if (context != null) {
-
-            journalsAdapter = JournalsAdapter(context!!, mutableListOf())
-            journalsAdapter.itemClickListener = this
-
-            rvJournals.layoutManager = LinearLayoutManager(context).apply {
-                reverseLayout = true
-                stackFromEnd = true
-            }
-            rvJournals.adapter = journalsAdapter
-        }
-        initJournalsListener()
-    }
-
-    private fun initJournalsListener() {
+    override fun initJournalsListener() {
         db.collection("journals")
             .addSnapshotListener { value, e ->
                 if (e != null) {

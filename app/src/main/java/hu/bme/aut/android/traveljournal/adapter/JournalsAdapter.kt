@@ -98,7 +98,7 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
                 journalList.filter { it.title!!.toLowerCase().contains(actualFilter) }
             filteredJournals.addAll(searchResults)
         }
-        if (filteredJournals.isNullOrEmpty())
+        if (filteredJournals.isNullOrEmpty() and !journalList.isNullOrEmpty() )
             onNothingFound?.invoke()
         notifyDataSetChanged()
     }

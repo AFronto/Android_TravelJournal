@@ -24,6 +24,12 @@
         tools:layout="@layout/fragment_my_journals" />
 
     <fragment
+        android:id="@+id/nav_edit_journal"
+        android:name="hu.bme.aut.android.traveljournal.ui.journal_detailed.EditJournalFragment"
+        android:label="@string/edit_journal"
+        tools:layout="@layout/fragment_edit_journal" />
+
+    <fragment
         android:id="@+id/nav_profile"
         android:name="hu.bme.aut.android.traveljournal.ui.profile.ProfileFragment"
         android:label="@string/menu_profile"

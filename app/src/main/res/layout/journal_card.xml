@@ -44,7 +44,7 @@
             android:id="@+id/downVote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginEnd="10dp"
             android:backgroundTint="@color/transparent"
             android:src="@drawable/ic_arrow_down"
             card_view:layout_constrainedWidth="true"
