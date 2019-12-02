@@ -6,15 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.data.Journal
 import kotlinx.android.synthetic.main.journal_card.view.*
 
-class JournalsAdapter(private val context: Context) : RecyclerView.Adapter<JournalsAdapter.ViewHolder>() {
+class JournalsAdapter(private val context: Context, private val journalList: MutableList<Journal>) :
+    RecyclerView.Adapter<JournalsAdapter.ViewHolder>() {
 
-    private val journalList: MutableList<Journal> = mutableListOf()
     private var lastPosition = -1
+    private var filteredJournals = mutableListOf<Journal>()
+    private var actualFilter = ""
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvAuthor: TextView = itemView.tvJournalAuthor
@@ -24,28 +27,28 @@ class JournalsAdapter(private val context: Context) : RecyclerView.Adapter<Journ
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater
-                .from(viewGroup.context)
-                .inflate(R.layout.journal_card, viewGroup, false)
+            .from(viewGroup.context)
+            .inflate(R.layout.journal_card, viewGroup, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val tmpJournal = journalList[position]
-        viewHolder.tvAuthor.text = "Created by: ${tmpJournal.author}"
+        val tmpJournal = filteredJournals[position]
+        viewHolder.tvAuthor.text = "Written by: ${tmpJournal.author}"
         viewHolder.tvTitle.text = tmpJournal.title
         viewHolder.tvRating.text = tmpJournal.rating.toString()
 
         setAnimation(viewHolder.itemView, position)
     }
 
-    override fun getItemCount() = journalList.size
+    override fun getItemCount() = filteredJournals.size
 
     fun addJournal(journal: Journal) {
         journal ?: return
 
         journalList.add(journal)
         journalList.sortBy { j -> j.rating }
-        notifyDataSetChanged()
+        filter(actualFilter) {}
     }
 
     private fun setAnimation(viewToAnimate: View, position: Int) {
@@ -54,6 +57,22 @@ class JournalsAdapter(private val context: Context) : RecyclerView.Adapter<Journ
             viewToAnimate.startAnimation(animation)
             lastPosition = position
         }
+    }
+
+    fun filter(constraint: String?, onNothingFound: (() -> Unit)?) {
+        actualFilter = constraint?:""
+        actualFilter = actualFilter.toLowerCase()
+        filteredJournals.clear()
+        if (actualFilter.isNullOrBlank()) {
+            filteredJournals.addAll(journalList)
+        } else {
+            val searchResults =
+                journalList.filter { it.title!!.toLowerCase().contains(actualFilter) }
+            filteredJournals.addAll(searchResults)
+        }
+        if (journalList.isNullOrEmpty())
+            onNothingFound?.invoke()
+        notifyDataSetChanged()
     }
 
 }

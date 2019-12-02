@@ -16,4 +16,5 @@
     <string name="menu_map">Map</string>
     <string name="menu_my_journals">My Journals</string>
     <string name="menu_profile">Profile</string>
+    <string name="searchHint">Search Journals Here</string>
 </resources>
