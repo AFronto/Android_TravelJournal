@@ -9,7 +9,9 @@ import android.widget.SearchView
 import android.widget.Toast
 
 import androidx.constraintlayout.widget.Constraints.TAG
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,10 +19,24 @@ import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.adapter.JournalsAdapter
 import hu.bme.aut.android.traveljournal.data.Journal
 import hu.bme.aut.android.traveljournal.ui.base.BaseJournalListFragment
+import hu.bme.aut.android.traveljournal.ui.journal_detailed.ReadJornalFragment
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.searchable_journal_list.*
 
 class HomeFragment : BaseJournalListFragment() {
+
+    override fun onItemClick(journal: Journal) {
+        var bundle =
+            bundleOf(
+                "id" to journal.id,
+                "title" to journal.title,
+                "authorId" to journal.authorId,
+                "author" to journal.author,
+                "rating" to journal.rating
+            )
+        findNavController().navigate(R.id.nav_read_journal, bundle)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +48,8 @@ class HomeFragment : BaseJournalListFragment() {
     }
 
     override fun fragmentSpecificInit() {
+        ReadJornalFragment.journalId = null
+
         db.collection("journals")
             .addSnapshotListener { value, e ->
                 if (e != null) {
