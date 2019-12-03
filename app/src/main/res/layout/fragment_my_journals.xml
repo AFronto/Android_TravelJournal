@@ -7,6 +7,7 @@
     <include layout="@layout/searchable_journal_list" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addJournalFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"

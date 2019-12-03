@@ -16,7 +16,7 @@ abstract class BaseActivity : AppCompatActivity() {
     val uid: String?
         get() = firebaseUser?.uid
 
-    protected val userName: String?
+    val userName: String?
         get() = firebaseUser?.displayName
 
     protected val userEmail: String?

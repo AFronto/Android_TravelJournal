@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
-            android:id="@+id/etTitle"
+            android:id="@+id/etPostTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Title"
@@ -25,16 +25,32 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/tvAuthor"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputLayoutBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Written by: Author"
-        android:textSize="17sp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/inputLayoutTitle"
-        android:layout_marginHorizontal="12dp"
-        />
+        app:layout_constrainedHeight="true"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintBottom_toTopOf="@+id/btnSave">
+
+        <EditText
+            android:id="@+id/etPostBody"
+            android:minLines="1"
+            android:gravity="top|left"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Body"
+            android:textSize="17sp"
+            android:inputType="textMultiLine"
+            android:text=""
+            android:scrollbars="vertical"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btnSave"
@@ -49,33 +65,6 @@
         android:text="Save"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constrainedHeight="true"
-        app:layout_constraintTop_toBottomOf="@+id/tvAuthor"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/rvPosts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintTop_toBottomOf="@id/btnSave"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="12dp"
-        android:paddingBottom="80dp"
-        android:clipToPadding="false"
-        />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addPostFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:src="@drawable/ic_plus_thick"
-        android:tint="@color/icons"
-        android:layout_margin="20dp"/>
-
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

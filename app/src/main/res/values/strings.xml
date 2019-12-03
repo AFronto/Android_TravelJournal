@@ -18,4 +18,5 @@
     <string name="menu_profile">Profile</string>
     <string name="searchHint">Search Journals Here</string>
     <string name="edit_journal">Edit Journal</string>
+    <string name="edit_post">Edit Post</string>
 </resources>

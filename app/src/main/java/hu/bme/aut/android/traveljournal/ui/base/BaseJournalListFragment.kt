@@ -53,8 +53,6 @@ abstract class BaseJournalListFragment : Fragment(), SearchView.OnQueryTextListe
     protected lateinit var journalsAdapter: JournalsAdapter
     val db = FirebaseFirestore.getInstance()
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         journalSearchView.setOnQueryTextListener(this)

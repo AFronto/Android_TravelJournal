@@ -30,6 +30,12 @@
         tools:layout="@layout/fragment_edit_journal" />
 
     <fragment
+        android:id="@+id/nav_edit_post"
+        android:name="hu.bme.aut.android.traveljournal.ui.journal_detailed.EditPostFragment"
+        android:label="@string/edit_post"
+        tools:layout="@layout/fragment_edit_post" />
+
+    <fragment
         android:id="@+id/nav_profile"
         android:name="hu.bme.aut.android.traveljournal.ui.profile.ProfileFragment"
         android:label="@string/menu_profile"

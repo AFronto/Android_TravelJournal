@@ -21,13 +21,21 @@ import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.adapter.JournalsAdapter
 import hu.bme.aut.android.traveljournal.data.Journal
 import hu.bme.aut.android.traveljournal.ui.base.BaseJournalListFragment
+import hu.bme.aut.android.traveljournal.ui.journal_detailed.EditJournalFragment
+import kotlinx.android.synthetic.main.fragment_my_journals.*
 import kotlinx.android.synthetic.main.searchable_journal_list.*
 
 class MyJournalsFragment : BaseJournalListFragment() {
 
     override fun onItemClick(journal: Journal) {
         var bundle =
-            bundleOf("id" to journal.id, "title" to journal.title, "author" to journal.author)
+            bundleOf(
+                "id" to journal.id,
+                "title" to journal.title,
+                "authorId" to journal.authorId,
+                "author" to journal.author,
+                "rating" to journal.rating
+            )
         findNavController().navigate(R.id.nav_edit_journal, bundle)
     }
 
@@ -41,6 +49,21 @@ class MyJournalsFragment : BaseJournalListFragment() {
     }
 
     override fun initJournalsListener() {
+        //reset journalId
+        EditJournalFragment.journalId = null
+
+        addJournalFab.setOnClickListener{
+            var bundle =
+                bundleOf(
+                    "id" to "",
+                    "title" to "",
+                    "authorId" to (context as JournalsActivity).uid,
+                    "author" to (context as JournalsActivity).userName,
+                    "rating" to 0
+                )
+            findNavController().navigate(R.id.nav_edit_journal, bundle)
+        }
+
         db.collection("journals")
             .whereEqualTo("authorId", (context as JournalsActivity).uid)
             .addSnapshotListener { value, e ->
