@@ -1,70 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputLayoutTitle"
+    <ScrollView xmlns:sc_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="9"
+        android:fillViewport="true">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputLayoutTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                sc_view:layout_constraintStart_toStartOf="parent"
+                sc_view:layout_constraintTop_toTopOf="parent">
+
+                <EditText
+                    android:id="@+id/etPostTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Title"
+                    android:inputType="text"
+                    android:text="Alma"
+                    android:textSize="20sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputLayoutBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                sc_view:layout_constrainedHeight="true"
+                sc_view:layout_constraintBottom_toTopOf="@+id/imgAttached"
+                sc_view:layout_constraintStart_toStartOf="parent"
+                sc_view:layout_constraintTop_toBottomOf="@id/inputLayoutTitle"
+                sc_view:layout_constraintVertical_bias="0">
+
+                <EditText
+                    android:id="@+id/etPostBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|left"
+                    android:hint="Body"
+                    android:inputType="textMultiLine"
+                    android:minLines="1"
+                    android:scrollbars="vertical"
+                    android:text=""
+                    android:textSize="17sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/imgAttached"
+                android:layout_width="match_parent"
+                android:layout_height= "300dp"
+                android:layout_marginHorizontal="12dp"
+                android:visibility="gone"
+                sc_view:layout_constrainedHeight="true"
+                sc_view:layout_constraintBottom_toBottomOf="parent"
+                sc_view:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/btnsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginHorizontal="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="horizontal"
+        >
 
-        <EditText
-            android:id="@+id/etPostTitle"
+        <Button
+            android:id="@+id/btnPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/btn_rounded"
+            android:drawableStart="@drawable/ic_menu_camera"
+            android:drawableTint="@color/icons"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title"
-            android:textSize="20sp"
-            android:inputType="text"
-            android:text="Alma" />
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/btn_rounded"
+            android:padding="12dp"
+            android:text="Save"
+            android:textSize="18sp" />
+    </LinearLayout>
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputLayoutBody"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginHorizontal="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/inputLayoutTitle"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintBottom_toTopOf="@+id/btnSave">
-
-        <EditText
-            android:id="@+id/etPostBody"
-            android:minLines="1"
-            android:gravity="top|left"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Body"
-            android:textSize="17sp"
-            android:inputType="textMultiLine"
-            android:text=""
-            android:scrollbars="vertical"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/btnSave"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginHorizontal="24dp"
-        android:padding="12dp"
-        android:textSize="18sp"
-        android:background="@drawable/btn_rounded"
-        android:text="Save"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.data.Post
 import kotlinx.android.synthetic.main.post_card.view.*
@@ -15,12 +17,20 @@ class PostsAdapter(private val context: Context, private val postList: MutableLi
     RecyclerView.Adapter<PostsAdapter.ViewHolder>() {
 
     private var lastPosition = -1
+    var itemClickListener: PostClickListener? = null
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvTitle: TextView = itemView.tvPostTitle
         val tvBody: TextView = itemView.tvPostBody
+        val imgPost: ImageView = itemView.imgPost
 
         var post: Post? = null
+
+        init {
+            itemView.setOnClickListener {
+                post?.let { post -> itemClickListener?.onItemClick(post) }
+            }
+        }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
@@ -36,6 +46,13 @@ class PostsAdapter(private val context: Context, private val postList: MutableLi
 
         viewHolder.tvTitle.text = tmpPost.title
         viewHolder.tvBody.text = tmpPost.body
+
+        if (tmpPost.img.isNullOrBlank()) {
+            viewHolder.imgPost.visibility = View.GONE
+        } else {
+            Glide.with(context).load(tmpPost.img).into(viewHolder.imgPost)
+            viewHolder.imgPost.visibility = View.VISIBLE
+        }
 
         setAnimation(viewHolder.itemView, position)
     }
@@ -55,5 +72,9 @@ class PostsAdapter(private val context: Context, private val postList: MutableLi
             viewToAnimate.startAnimation(animation)
             lastPosition = position
         }
+    }
+
+    interface PostClickListener {
+        fun onItemClick(post: Post)
     }
 }

@@ -68,8 +68,8 @@ abstract class BaseJournalListFragment : Fragment(), SearchView.OnQueryTextListe
             }
             rvJournals.adapter = journalsAdapter
         }
-        initJournalsListener()
+        fragmentSpecificInit()
     }
 
-    abstract fun initJournalsListener()
+    abstract fun fragmentSpecificInit()
 }

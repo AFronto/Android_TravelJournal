@@ -31,7 +31,7 @@ class HomeFragment : BaseJournalListFragment() {
         return root
     }
 
-    override fun initJournalsListener() {
+    override fun fragmentSpecificInit() {
         db.collection("journals")
             .addSnapshotListener { value, e ->
                 if (e != null) {

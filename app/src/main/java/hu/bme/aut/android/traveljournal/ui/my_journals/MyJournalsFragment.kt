@@ -48,7 +48,7 @@ class MyJournalsFragment : BaseJournalListFragment() {
         return root
     }
 
-    override fun initJournalsListener() {
+    override fun fragmentSpecificInit() {
         //reset journalId
         EditJournalFragment.journalId = null
 

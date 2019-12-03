@@ -18,13 +18,27 @@ import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.adapter.PostsAdapter
 import hu.bme.aut.android.traveljournal.data.Journal
 import hu.bme.aut.android.traveljournal.data.Post
+import hu.bme.aut.android.traveljournal.extensions.validateNonEmpty
 import kotlinx.android.synthetic.main.fragment_edit_journal.*
 
-class EditJournalFragment : Fragment() {
+class EditJournalFragment : Fragment(), PostsAdapter.PostClickListener {
+    override fun onItemClick(post: Post) {
+        var bundle =
+            bundleOf(
+                "id" to post.id,
+                "title" to post.title,
+                "body" to post.body,
+                "parentJournalId" to journalId,
+                "creationTime" to post.creationTime,
+                "img" to post.img
+            )
+        findNavController().navigate(R.id.nav_edit_post, bundle)
+    }
 
     private lateinit var postssAdapter: PostsAdapter
     val db = FirebaseFirestore.getInstance()
-    companion object{
+
+    companion object {
         var journalId: String? = null
     }
 
@@ -41,39 +55,63 @@ class EditJournalFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         etTitle.setText(arguments?.getString("title"))
         tvAuthor.text = "Written by: ${arguments?.getString("author")}"
-        journalId = journalId?:arguments?.getString("id")
+        journalId = journalId ?: arguments?.getString("id")
 
         btnSave.setOnClickListener() {
-            val journal = hashMapOf(
-                "author" to arguments?.getString("author"),
-                "title" to etTitle.text.toString(),
-                "rating" to arguments?.getInt("rating"),
-                "authorId" to arguments?.getString("authorId")
-            )
-            if (journalId.isNullOrBlank()) {
-                var newDoc = db.collection("journals").document()
-                journalId = newDoc.id
-                newDoc.set(journal)
-                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully added!") }
-                    .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
+            if (!etTitle.validateNonEmpty()) {
+                Toast.makeText(context, "Missing journal title!", Toast.LENGTH_SHORT).show()
             } else {
-                db.collection("journals").document(journalId!!)
-                    .set(journal)
-                    .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
-                    .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+                val journal = hashMapOf(
+                    "author" to arguments?.getString("author"),
+                    "title" to etTitle.text.toString(),
+                    "rating" to arguments?.getInt("rating"),
+                    "authorId" to arguments?.getString("authorId")
+                )
+                if (journalId.isNullOrBlank()) {
+                    var newDoc = db.collection("journals").document()
+                    journalId = newDoc.id
+                    newDoc.set(journal)
+                        .addOnSuccessListener {
+                            Log.d(TAG, "DocumentSnapshot successfully added!")
+                            Toast.makeText(
+                                context,
+                                "Journal successfully saved!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
+                } else {
+                    db.collection("journals").document(journalId!!)
+                        .set(journal)
+                        .addOnSuccessListener {
+                            Log.d(
+                                TAG,
+                                "DocumentSnapshot successfully updated!"
+                            )
+                            Toast.makeText(
+                                context,
+                                "Journal successfully saved!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+                }
             }
         }
 
         addPostFab.setOnClickListener {
             if (journalId.isNullOrBlank()) {
-                Toast.makeText(context, "There is no journal created yet!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "There is no journal created yet!", Toast.LENGTH_SHORT)
+                    .show()
             } else {
                 var bundle =
                     bundleOf(
                         "id" to "",
                         "title" to "",
                         "body" to "",
-                        "parentJournalId" to journalId
+                        "parentJournalId" to journalId,
+                        "creationTime" to null,
+                        "img" to null
                     )
                 findNavController().navigate(R.id.nav_edit_post, bundle)
             }
@@ -90,10 +128,13 @@ class EditJournalFragment : Fragment() {
             rvPosts.adapter = postssAdapter
         }
 
+        postssAdapter.itemClickListener = this
+
         initPostsListener()
     }
 
     private fun initPostsListener() {
+        Log.d("JornalId", journalId)
         db.collection("posts")
             .whereEqualTo("parentJournalId", journalId)
             .orderBy("creationTime")
