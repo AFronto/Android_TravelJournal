@@ -7,33 +7,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.Constraints
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.FirebaseFirestore
 import hu.bme.aut.android.traveljournal.JournalsActivity
 import hu.bme.aut.android.traveljournal.R
-import hu.bme.aut.android.traveljournal.adapter.JournalsAdapter
 import hu.bme.aut.android.traveljournal.data.Journal
 import hu.bme.aut.android.traveljournal.ui.base.BaseJournalListFragment
 import hu.bme.aut.android.traveljournal.ui.journal_detailed.EditJournalFragment
 import kotlinx.android.synthetic.main.fragment_my_journals.*
-import kotlinx.android.synthetic.main.searchable_journal_list.*
 
 class MyJournalsFragment : BaseJournalListFragment() {
     override fun onItemLongClick(journal: Journal, view: View): Boolean {
         val popup = PopupMenu(context, view)
         popup.inflate(R.menu.menu_todo)
+        if (journal.onGoing) {
+            popup.menu.getItem(0).title = "FINISH"
+        }
+
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.delete -> deleteJournal(journal)
+                R.id.delete -> deleteOrFinishJournal(journal)
             }
             false
         }
@@ -48,7 +44,9 @@ class MyJournalsFragment : BaseJournalListFragment() {
                 "title" to journal.title,
                 "authorId" to journal.authorId,
                 "author" to journal.author,
-                "rating" to journal.rating
+                "rating" to journal.rating,
+                "privatized" to journal.privatized,
+                "onGoing" to journal.onGoing
             )
         findNavController().navigate(R.id.nav_edit_journal, bundle)
     }
@@ -62,24 +60,36 @@ class MyJournalsFragment : BaseJournalListFragment() {
         return root
     }
 
-    private fun deleteJournal(journal: Journal) {
-        db.collection("journals").document(journal.id!!).delete()
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+    private fun deleteOrFinishJournal(journal: Journal) {
+        if (journal.onGoing) {
+            db.collection("journals").document(journal.id!!)
+                .update("onGoing", false)
+                .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+        } else {
+            db.collection("journals").document(journal.id!!).delete()
+                .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
 
-        db.collection("posts")
-            .whereEqualTo("parentJournalId", journal.id)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    db.collection("posts").document(document.id).delete()
-                        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
-                        .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+            db.collection("posts")
+                .whereEqualTo("parentJournalId", journal.id)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        db.collection("posts").document(document.id).delete()
+                            .addOnSuccessListener {
+                                Log.d(
+                                    TAG,
+                                    "DocumentSnapshot successfully deleted!"
+                                )
+                            }
+                            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+                    }
                 }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
-            }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        }
     }
 
     override fun fragmentSpecificInit() {
@@ -87,15 +97,22 @@ class MyJournalsFragment : BaseJournalListFragment() {
         EditJournalFragment.journalId = null
 
         addJournalFab.setOnClickListener {
-            var bundle =
-                bundleOf(
-                    "id" to "",
-                    "title" to "",
-                    "authorId" to (context as JournalsActivity).uid,
-                    "author" to (context as JournalsActivity).userName,
-                    "rating" to 0
-                )
-            findNavController().navigate(R.id.nav_edit_journal, bundle)
+            if (journalsAdapter.isThereOnGoing()) {
+                Toast.makeText(context, "You already have an on going Journal!", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                var bundle =
+                    bundleOf(
+                        "id" to "",
+                        "title" to "",
+                        "authorId" to (context as JournalsActivity).uid,
+                        "author" to (context as JournalsActivity).userName,
+                        "rating" to 0,
+                        "privatized" to false,
+                        "onGoing" to true
+                    )
+                findNavController().navigate(R.id.nav_edit_journal, bundle)
+            }
         }
 
         registration = db.collection("journals")

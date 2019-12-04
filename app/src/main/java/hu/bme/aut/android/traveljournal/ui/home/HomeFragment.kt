@@ -54,6 +54,7 @@ class HomeFragment : BaseJournalListFragment() {
         ReadJornalFragment.journalId = null
 
         registration = db.collection("journals")
+            .whereEqualTo("privatized", false)
             .addSnapshotListener { value, e ->
                 if (e != null) {
                     Log.w(TAG, "Listen failed.", e)

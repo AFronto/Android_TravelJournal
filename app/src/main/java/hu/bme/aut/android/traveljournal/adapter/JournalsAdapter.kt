@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,7 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
         val tvAuthor: TextView = itemView.tvJournalAuthor
         val tvTitle: TextView = itemView.tvJournalTitle
         val tvRating: TextView = itemView.tvJournalRating
+        val isFinished: ImageView = itemView.imgIsFinished
 
         var journal: Journal? = null
 
@@ -65,6 +67,9 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
         viewHolder.tvAuthor.text = "Written by: ${tmpJournal.author}"
         viewHolder.tvTitle.text = tmpJournal.title
         viewHolder.tvRating.text = tmpJournal.rating.toString()
+        if(!tmpJournal.onGoing){
+            viewHolder.isFinished.visibility =  View.VISIBLE
+        }
 
         setAnimation(viewHolder.itemView, position)
     }
@@ -92,6 +97,10 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
         journalList.removeAt(journalList.indexOfFirst { old -> old.id == journal.id })
         journalList.sortBy { j -> j.rating }
         filter(actualFilter) {}
+    }
+
+    fun isThereOnGoing(): Boolean {
+        return journalList.any{ journal -> journal.onGoing }
     }
 
     private fun setAnimation(viewToAnimate: View, position: Int) {

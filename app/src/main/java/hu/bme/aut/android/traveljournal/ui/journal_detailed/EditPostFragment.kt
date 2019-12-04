@@ -60,6 +60,7 @@ class EditPostFragment : Fragment() {
         }
 
         btnSave.setOnClickListener {
+            btnSave.isEnabled = false
             if (imgAttached.visibility != View.VISIBLE) {
                 uploadPost()
             } else {
@@ -92,6 +93,7 @@ class EditPostFragment : Fragment() {
                 .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
                 .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
         }
+        btnSave.isEnabled = true
         findNavController().navigateUp()
     }
 

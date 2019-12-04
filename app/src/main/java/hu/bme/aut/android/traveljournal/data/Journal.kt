@@ -5,5 +5,7 @@ class Journal(
         var authorId: String? = null,
         var author: String? = null,
         var title: String? = null,
-        var rating: Int? = null
+        var rating: Int? = null,
+        var privatized: Boolean = false,
+        var onGoing: Boolean = false
 )

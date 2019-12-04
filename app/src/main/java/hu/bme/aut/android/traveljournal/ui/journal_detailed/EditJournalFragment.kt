@@ -68,6 +68,7 @@ class EditJournalFragment : Fragment(), PostsAdapter.PostClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         etTitle.setText(arguments?.getString("title"))
+        swPrivatized.isChecked = arguments?.getBoolean("privatized") ?: false
         tvAuthor.text = "Written by: ${arguments?.getString("author")}"
         journalId = journalId ?: arguments?.getString("id")
 
@@ -103,7 +104,9 @@ class EditJournalFragment : Fragment(), PostsAdapter.PostClickListener {
                 "author" to arguments?.getString("author"),
                 "title" to etTitle.text.toString(),
                 "rating" to arguments?.getInt("rating"),
-                "authorId" to arguments?.getString("authorId")
+                "authorId" to arguments?.getString("authorId"),
+                "privatized" to swPrivatized.isChecked,
+                "onGoing" to arguments?.getBoolean("onGoing")
             )
             if (journalId.isNullOrBlank()) {
                 var newDoc = db.collection("journals").document()

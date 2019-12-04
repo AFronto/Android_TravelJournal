@@ -39,6 +39,14 @@
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toBottomOf="@id/tvJournalTitle" />
 
+        <ImageView
+            android:id="@+id/imgIsFinished"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:src="@drawable/ic_check_decagram"
+            card_view:layout_constraintTop_toBottomOf="@id/tvJournalAuthor"
+            card_view:layout_constraintStart_toStartOf="parent"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/downVote"
