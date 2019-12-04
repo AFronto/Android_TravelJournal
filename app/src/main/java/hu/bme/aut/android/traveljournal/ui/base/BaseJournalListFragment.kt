@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.adapter.JournalsAdapter
 import hu.bme.aut.android.traveljournal.data.Journal
@@ -19,9 +20,6 @@ import kotlinx.android.synthetic.main.searchable_journal_list.*
 
 abstract class BaseJournalListFragment : Fragment(), SearchView.OnQueryTextListener,
     JournalsAdapter.JournalClickListener {
-    override fun onItemClick(journal: Journal) {
-        Log.d("ItemClicked", "${journal.title}")
-    }
 
     override fun onItemDownVote(journal: Journal) {
         db.collection("journals").document(journal.id!!)
@@ -50,6 +48,7 @@ abstract class BaseJournalListFragment : Fragment(), SearchView.OnQueryTextListe
         return false
     }
 
+    protected lateinit var registration: ListenerRegistration
     protected lateinit var journalsAdapter: JournalsAdapter
     val db = FirebaseFirestore.getInstance()
 
@@ -69,6 +68,11 @@ abstract class BaseJournalListFragment : Fragment(), SearchView.OnQueryTextListe
             rvJournals.adapter = journalsAdapter
         }
         fragmentSpecificInit()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        registration.remove()
     }
 
     abstract fun fragmentSpecificInit()

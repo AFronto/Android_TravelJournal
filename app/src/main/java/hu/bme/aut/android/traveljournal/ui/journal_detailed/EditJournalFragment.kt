@@ -2,11 +2,11 @@ package hu.bme.aut.android.traveljournal.ui.journal_detailed
 
 import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -14,14 +14,27 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.adapter.PostsAdapter
-import hu.bme.aut.android.traveljournal.data.Journal
 import hu.bme.aut.android.traveljournal.data.Post
 import hu.bme.aut.android.traveljournal.extensions.validateNonEmpty
 import kotlinx.android.synthetic.main.fragment_edit_journal.*
 
 class EditJournalFragment : Fragment(), PostsAdapter.PostClickListener {
+    override fun onItemLongClick(post: Post, view: View): Boolean {
+        val popup = PopupMenu(context, view)
+        popup.inflate(R.menu.menu_todo)
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.delete -> deletePost(post)
+            }
+            false
+        }
+        popup.show()
+        return false
+    }
+
     override fun onItemClick(post: Post) {
         var bundle =
             bundleOf(
@@ -35,7 +48,8 @@ class EditJournalFragment : Fragment(), PostsAdapter.PostClickListener {
         findNavController().navigate(R.id.nav_edit_post, bundle)
     }
 
-    private lateinit var postssAdapter: PostsAdapter
+    private lateinit var registration: ListenerRegistration
+    private lateinit var postsAdapter: PostsAdapter
     val db = FirebaseFirestore.getInstance()
 
     companion object {
@@ -67,16 +81,16 @@ class EditJournalFragment : Fragment(), PostsAdapter.PostClickListener {
 
         if (context != null) {
 
-            postssAdapter = PostsAdapter(context!!, mutableListOf())
+            postsAdapter = PostsAdapter(context!!, mutableListOf())
 
             rvPosts.layoutManager = LinearLayoutManager(context).apply {
                 reverseLayout = true
                 stackFromEnd = true
             }
-            rvPosts.adapter = postssAdapter
+            rvPosts.adapter = postsAdapter
         }
 
-        postssAdapter.itemClickListener = this
+        postsAdapter.itemClickListener = this
 
         initPostsListener()
     }
@@ -141,8 +155,19 @@ class EditJournalFragment : Fragment(), PostsAdapter.PostClickListener {
         }
     }
 
+    private fun deletePost(post: Post) {
+        db.collection("posts").document(post.id!!).delete()
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        registration.remove()
+    }
+
     private fun initPostsListener() {
-        db.collection("posts")
+        registration = db.collection("posts")
             .whereEqualTo("parentJournalId", journalId)
             .orderBy("creationTime")
             .addSnapshotListener { value, e ->
@@ -158,8 +183,26 @@ class EditJournalFragment : Fragment(), PostsAdapter.PostClickListener {
                                 Post::class.java
                             )
                             newPost.id = doc.document.id
-                            postssAdapter.addPost(
+                            postsAdapter.addPost(
                                 newPost
+                            )
+                        }
+                        DocumentChange.Type.MODIFIED -> {
+                            var modPost = doc.document.toObject(
+                                Post::class.java
+                            )
+                            modPost.id = doc.document.id
+                            postsAdapter.updatePost(
+                                modPost
+                            )
+                        }
+                        DocumentChange.Type.REMOVED -> {
+                            var delPost = doc.document.toObject(
+                                Post::class.java
+                            )
+                            delPost.id = doc.document.id
+                            postsAdapter.deletePost(
+                                delPost
                             )
                         }
                     }

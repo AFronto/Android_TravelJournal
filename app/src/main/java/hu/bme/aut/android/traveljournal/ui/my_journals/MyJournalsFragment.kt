@@ -1,10 +1,12 @@
 package hu.bme.aut.android.traveljournal.ui.my_journals
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.constraintlayout.widget.Constraints
 import androidx.core.os.bundleOf
@@ -26,6 +28,18 @@ import kotlinx.android.synthetic.main.fragment_my_journals.*
 import kotlinx.android.synthetic.main.searchable_journal_list.*
 
 class MyJournalsFragment : BaseJournalListFragment() {
+    override fun onItemLongClick(journal: Journal, view: View): Boolean {
+        val popup = PopupMenu(context, view)
+        popup.inflate(R.menu.menu_todo)
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.delete -> deleteJournal(journal)
+            }
+            false
+        }
+        popup.show()
+        return false
+    }
 
     override fun onItemClick(journal: Journal) {
         var bundle =
@@ -48,11 +62,31 @@ class MyJournalsFragment : BaseJournalListFragment() {
         return root
     }
 
+    private fun deleteJournal(journal: Journal) {
+        db.collection("journals").document(journal.id!!).delete()
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+
+        db.collection("posts")
+            .whereEqualTo("parentJournalId", journal.id)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    db.collection("posts").document(document.id).delete()
+                        .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+                        .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
+    }
+
     override fun fragmentSpecificInit() {
         //reset journalId
         EditJournalFragment.journalId = null
 
-        addJournalFab.setOnClickListener{
+        addJournalFab.setOnClickListener {
             var bundle =
                 bundleOf(
                     "id" to "",
@@ -64,7 +98,7 @@ class MyJournalsFragment : BaseJournalListFragment() {
             findNavController().navigate(R.id.nav_edit_journal, bundle)
         }
 
-        db.collection("journals")
+        registration = db.collection("journals")
             .whereEqualTo("authorId", (context as JournalsActivity).uid)
             .addSnapshotListener { value, e ->
                 if (e != null) {
@@ -91,6 +125,15 @@ class MyJournalsFragment : BaseJournalListFragment() {
                             modJournal.id = doc.document.id
                             journalsAdapter.updateJournal(
                                 modJournal
+                            )
+                        }
+                        DocumentChange.Type.REMOVED -> {
+                            var delJournal = doc.document.toObject(
+                                Journal::class.java
+                            )
+                            delJournal.id = doc.document.id
+                            journalsAdapter.deleteJournal(
+                                delJournal
                             )
                         }
                     }

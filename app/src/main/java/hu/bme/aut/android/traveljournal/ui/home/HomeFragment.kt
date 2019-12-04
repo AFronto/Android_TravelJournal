@@ -24,6 +24,9 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.searchable_journal_list.*
 
 class HomeFragment : BaseJournalListFragment() {
+    override fun onItemLongClick(journal: Journal, view: View): Boolean {
+        return false
+    }
 
     override fun onItemClick(journal: Journal) {
         var bundle =
@@ -50,7 +53,7 @@ class HomeFragment : BaseJournalListFragment() {
     override fun fragmentSpecificInit() {
         ReadJornalFragment.journalId = null
 
-        db.collection("journals")
+        registration = db.collection("journals")
             .addSnapshotListener { value, e ->
                 if (e != null) {
                     Log.w(TAG, "Listen failed.", e)
@@ -76,6 +79,15 @@ class HomeFragment : BaseJournalListFragment() {
                             modJournal.id = doc.document.id
                             journalsAdapter.updateJournal(
                                 modJournal
+                            )
+                        }
+                        DocumentChange.Type.REMOVED -> {
+                            var delJournal = doc.document.toObject(
+                                Journal::class.java
+                            )
+                            delJournal.id = doc.document.id
+                            journalsAdapter.deleteJournal(
+                                delJournal
                             )
                         }
                     }

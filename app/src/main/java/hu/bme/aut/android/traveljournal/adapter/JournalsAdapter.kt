@@ -1,6 +1,7 @@
 package hu.bme.aut.android.traveljournal.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,13 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
             itemView.upVote.setOnClickListener {
                 journal?.let { journal -> itemClickListener?.onItemUpVote(journal) }
             }
+            itemView.setOnLongClickListener {
+                journal.let { journal
+                    ->
+                    itemClickListener?.onItemLongClick(journal!!, itemView)
+                    true
+                }
+            }
         }
     }
 
@@ -64,7 +72,10 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
     override fun getItemCount() = filteredJournals.size
 
     fun addJournal(journal: Journal) {
-        journal ?: return
+        if(journalList.find{it.id == journal.id} != null){
+            updateJournal(journal)
+            return
+        }
 
         journalList.add(journal)
         journalList.sortBy { j -> j.rating }
@@ -72,9 +83,13 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
     }
 
     fun updateJournal(journal: Journal) {
-        journal ?: return
-
         journalList[journalList.indexOfFirst { old -> old.id == journal.id }] = journal
+        journalList.sortBy { j -> j.rating }
+        filter(actualFilter) {}
+    }
+
+    fun deleteJournal(journal: Journal) {
+        journalList.removeAt(journalList.indexOfFirst { old -> old.id == journal.id })
         journalList.sortBy { j -> j.rating }
         filter(actualFilter) {}
     }
@@ -105,6 +120,7 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
 
     interface JournalClickListener {
         fun onItemClick(journal: Journal)
+        fun onItemLongClick(journal: Journal, view: View): Boolean
         fun onItemDownVote(journal: Journal)
         fun onItemUpVote(journal: Journal)
     }

@@ -1,6 +1,7 @@
 package hu.bme.aut.android.traveljournal.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,14 @@ class PostsAdapter(private val context: Context, private val postList: MutableLi
             itemView.setOnClickListener {
                 post?.let { post -> itemClickListener?.onItemClick(post) }
             }
+            itemView.setOnLongClickListener {
+                post.let { post
+                    ->
+                    itemClickListener?.onItemLongClick(post!!, itemView)
+                    true
+                }
+            }
+
         }
     }
 
@@ -60,10 +69,25 @@ class PostsAdapter(private val context: Context, private val postList: MutableLi
     override fun getItemCount() = postList.size
 
     fun addPost(post: Post) {
-        post ?: return
+        if(postList.find{it.id == post.id} != null){
+            updatePost(post)
+            return
+        }
 
         postList.add(post)
         notifyDataSetChanged()
+    }
+
+    fun updatePost(post: Post) {
+        val index = postList.indexOfFirst { old -> old.id == post.id }
+        postList[index] = post
+        notifyItemChanged(index)
+    }
+
+    fun deletePost(post: Post) {
+        val index = postList.indexOfFirst { old -> old.id == post.id }
+        postList.removeAt(index)
+        notifyItemRemoved(index)
     }
 
     private fun setAnimation(viewToAnimate: View, position: Int) {
@@ -76,5 +100,6 @@ class PostsAdapter(private val context: Context, private val postList: MutableLi
 
     interface PostClickListener {
         fun onItemClick(post: Post)
+        fun onItemLongClick(post: Post, view: View): Boolean
     }
 }
