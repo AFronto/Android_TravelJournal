@@ -17,6 +17,8 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        title = getString(R.string.activity_login)
+
         firebaseAuth = FirebaseAuth.getInstance()
 
         btnRegister.setOnClickListener { registerClick() }
