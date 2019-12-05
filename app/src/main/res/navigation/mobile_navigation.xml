@@ -25,19 +25,19 @@
 
     <fragment
         android:id="@+id/nav_edit_journal"
-        android:name="hu.bme.aut.android.traveljournal.ui.journal_detailed.EditJournalFragment"
+        android:name="hu.bme.aut.android.traveljournal.ui.journal_edit.EditJournalFragment"
         android:label="@string/edit_journal"
         tools:layout="@layout/fragment_edit_journal" />
 
     <fragment
         android:id="@+id/nav_read_journal"
-        android:name="hu.bme.aut.android.traveljournal.ui.journal_detailed.ReadJornalFragment"
+        android:name="hu.bme.aut.android.traveljournal.ui.journal_read.ReadJornalFragment"
         android:label="{title}"
         tools:layout="@layout/fragment_read_journal" />
 
     <fragment
         android:id="@+id/nav_edit_post"
-        android:name="hu.bme.aut.android.traveljournal.ui.journal_detailed.EditPostFragment"
+        android:name="hu.bme.aut.android.traveljournal.ui.journal_edit.EditPostFragment"
         android:label="@string/edit_post"
         tools:layout="@layout/fragment_edit_post" />
 

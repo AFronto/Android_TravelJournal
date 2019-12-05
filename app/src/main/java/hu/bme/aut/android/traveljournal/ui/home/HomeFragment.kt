@@ -5,23 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
-import android.widget.Toast
 
 import androidx.constraintlayout.widget.Constraints.TAG
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.FirebaseFirestore
 import hu.bme.aut.android.traveljournal.R
-import hu.bme.aut.android.traveljournal.adapter.JournalsAdapter
 import hu.bme.aut.android.traveljournal.data.Journal
 import hu.bme.aut.android.traveljournal.ui.base.BaseJournalListFragment
-import hu.bme.aut.android.traveljournal.ui.journal_detailed.ReadJornalFragment
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.searchable_journal_list.*
+import hu.bme.aut.android.traveljournal.ui.journal_read.ReadJornalFragment
 
 class HomeFragment : BaseJournalListFragment() {
     override fun onItemLongClick(journal: Journal, view: View): Boolean {

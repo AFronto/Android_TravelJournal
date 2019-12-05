@@ -1,4 +1,4 @@
-package hu.bme.aut.android.traveljournal.ui.journal_detailed
+package hu.bme.aut.android.traveljournal.ui.journal_read
 
 import android.content.ContentValues.TAG
 import android.os.Bundle

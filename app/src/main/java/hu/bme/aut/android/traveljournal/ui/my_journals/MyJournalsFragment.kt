@@ -16,7 +16,7 @@ import hu.bme.aut.android.traveljournal.JournalsActivity
 import hu.bme.aut.android.traveljournal.R
 import hu.bme.aut.android.traveljournal.data.Journal
 import hu.bme.aut.android.traveljournal.ui.base.BaseJournalListFragment
-import hu.bme.aut.android.traveljournal.ui.journal_detailed.EditJournalFragment
+import hu.bme.aut.android.traveljournal.ui.journal_edit.EditJournalFragment
 import kotlinx.android.synthetic.main.fragment_my_journals.*
 
 class MyJournalsFragment : BaseJournalListFragment() {

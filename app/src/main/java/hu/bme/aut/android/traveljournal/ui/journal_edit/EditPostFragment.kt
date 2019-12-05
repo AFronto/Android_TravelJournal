@@ -1,4 +1,4 @@
-package hu.bme.aut.android.traveljournal.ui.journal_detailed
+package hu.bme.aut.android.traveljournal.ui.journal_edit
 
 import android.app.Activity
 import android.content.ContentValues.TAG
@@ -16,11 +16,11 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.android.traveljournal.JournalsActivity
 import hu.bme.aut.android.traveljournal.R
 import kotlinx.android.synthetic.main.fragment_edit_post.*
-import kotlinx.android.synthetic.main.post_card.*
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.util.*
@@ -56,7 +56,9 @@ class EditPostFragment : Fragment() {
 
         btnPhoto.setOnClickListener {
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivityForResult(takePictureIntent, REQUEST_CODE)
+            startActivityForResult(takePictureIntent,
+                REQUEST_CODE
+            )
         }
 
         btnSave.setOnClickListener {
@@ -80,7 +82,8 @@ class EditPostFragment : Fragment() {
             "title" to etPostTitle.text.toString(),
             "body" to etPostBody.text.toString(),
             "creationTime" to creationTime,
-            "img" to imageUrl
+            "img" to imageUrl,
+            "location" to GeoPoint(arguments?.getDouble("locationLat")!!,arguments?.getDouble("locationLon")!!)
         )
         if (arguments?.getString("id").isNullOrBlank()) {
             db.collection("posts").document()
