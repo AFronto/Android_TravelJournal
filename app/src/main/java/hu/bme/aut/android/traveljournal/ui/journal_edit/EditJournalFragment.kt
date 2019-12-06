@@ -22,6 +22,9 @@ import hu.bme.aut.android.traveljournal.ui.base.BaseLocationListeningFragment
 import kotlinx.android.synthetic.main.fragment_edit_journal.*
 
 class EditJournalFragment : BaseLocationListeningFragment(), PostsAdapter.PostClickListener{
+    override fun firstLocationRecived() {
+    }
+
     override fun onItemLongClick(post: Post, view: View): Boolean {
         val popup = PopupMenu(context, view)
         popup.inflate(R.menu.menu_todo)
@@ -56,6 +59,14 @@ class EditJournalFragment : BaseLocationListeningFragment(), PostsAdapter.PostCl
 
     companion object {
         var journalId: String? = null
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (arguments?.getBoolean(("onGoing"))!!) {
+            createLocationRequest()
+        }
     }
 
     override fun onCreateView(

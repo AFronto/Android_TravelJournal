@@ -43,19 +43,16 @@ abstract class BaseLocationListeningFragment : Fragment() {
     private val locationReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val currentLocation = intent.getParcelableExtra<Location>(LocationService.KEY_LOCATION)
-            lastKnownLocation = GeoPoint(currentLocation.latitude,currentLocation.longitude)
+
+            if(lastKnownLocation == null){
+                lastKnownLocation = GeoPoint(currentLocation.latitude,currentLocation.longitude)
+                firstLocationRecived()
+            }else{
+                lastKnownLocation = GeoPoint(currentLocation.latitude,currentLocation.longitude)
+            }
 
             Log.d("LOC", "Location caught ${currentLocation.latitude} ${currentLocation.longitude}")
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        if (arguments?.getBoolean(("onGoing"))!!) {
-            createLocationRequest()
-        }
-
     }
 
     override fun onStart() {
@@ -81,7 +78,7 @@ abstract class BaseLocationListeningFragment : Fragment() {
                 )
     }
 
-    private fun createLocationRequest() {
+    protected fun createLocationRequest() {
         locationRequest = LocationRequest.create().apply {
             interval = 10000
             fastestInterval = 5000
@@ -114,4 +111,6 @@ abstract class BaseLocationListeningFragment : Fragment() {
             // by showing the user a dialog.
         }
     }
+
+    abstract fun firstLocationRecived()
 }

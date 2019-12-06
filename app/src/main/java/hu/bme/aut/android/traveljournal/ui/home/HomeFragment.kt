@@ -27,7 +27,9 @@ class HomeFragment : BaseJournalListFragment() {
                 "title" to journal.title,
                 "authorId" to journal.authorId,
                 "author" to journal.author,
-                "rating" to journal.rating
+                "rating" to journal.rating,
+                "privatized" to journal.privatized,
+                "onGoing" to journal.onGoing
             )
         findNavController().navigate(R.id.nav_read_journal, bundle)
     }
