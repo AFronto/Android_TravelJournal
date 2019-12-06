@@ -67,8 +67,11 @@ class JournalsAdapter(private val context: Context, private val journalList: Mut
         viewHolder.tvAuthor.text = "Written by: ${tmpJournal.author}"
         viewHolder.tvTitle.text = tmpJournal.title
         viewHolder.tvRating.text = tmpJournal.rating.toString()
+
         if(!tmpJournal.onGoing){
             viewHolder.isFinished.visibility =  View.VISIBLE
+        }else{
+            viewHolder.isFinished.visibility =  View.GONE
         }
 
         setAnimation(viewHolder.itemView, position)

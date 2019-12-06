@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.fragment_my_journals.*
 class MyJournalsFragment : BaseJournalListFragment() {
     override fun onItemLongClick(journal: Journal, view: View): Boolean {
         val popup = PopupMenu(context, view)
-        popup.inflate(R.menu.menu_todo)
+        popup.inflate(R.menu.menu_pop_up)
         if (journal.onGoing) {
             popup.menu.getItem(0).title = "FINISH"
         }

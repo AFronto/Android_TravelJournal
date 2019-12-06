@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,13 +28,25 @@ import hu.bme.aut.android.traveljournal.data.Journal
 import hu.bme.aut.android.traveljournal.data.Post
 import hu.bme.aut.android.traveljournal.data.PostWithMarker
 import hu.bme.aut.android.traveljournal.ui.base.BaseLocationListeningFragment
+import hu.bme.aut.android.traveljournal.ui.journal_read.ReadJornalFragment
+import kotlin.random.Random
 
 
 class MapFragment : BaseLocationListeningFragment(), OnMapReadyCallback,
-    GoogleMap.OnPolylineClickListener {
+    GoogleMap.OnPolylineClickListener, GoogleMap.OnInfoWindowClickListener {
+    override fun onInfoWindowClick(p0: Marker?) {
+        var journalId =
+            markers.filterValues { markersAndPosts -> markersAndPosts.any { markersAndPost -> markersAndPost.marker == p0 } }
+                .entries.first().key
+        tryToReadJournal(journalId)
+    }
+
     override fun onPolylineClick(p0: Polyline?) {
         var journalId = routes.filterValues { polyline -> p0 == polyline }.entries.first().key
+        tryToReadJournal(journalId)
+    }
 
+    private fun tryToReadJournal(journalId: String) {
         db.collection("journals")
             .document(journalId)
             .get()
@@ -42,9 +55,13 @@ class MapFragment : BaseLocationListeningFragment(), OnMapReadyCallback,
                     var journal = document.toObject(
                         Journal::class.java
                     )
-                    if(journal!!.privatized){
-                        Toast.makeText(context,"This journal is private you cannot read it!",Toast.LENGTH_SHORT)
-                    }else{
+                    if (journal!!.privatized) {
+                        Toast.makeText(
+                            context,
+                            "This journal is private you cannot read it!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
                         var bundle =
                             bundleOf(
                                 "id" to journalId,
@@ -55,6 +72,8 @@ class MapFragment : BaseLocationListeningFragment(), OnMapReadyCallback,
                                 "privatized" to journal.privatized,
                                 "onGoing" to journal.onGoing
                             )
+
+                        clearRoutes()
                         findNavController().navigate(R.id.nav_read_journal, bundle)
                     }
                 } else {
@@ -64,8 +83,6 @@ class MapFragment : BaseLocationListeningFragment(), OnMapReadyCallback,
             .addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
             }
-
-
     }
 
     private lateinit var myMap: GoogleMap
@@ -97,11 +114,14 @@ class MapFragment : BaseLocationListeningFragment(), OnMapReadyCallback,
     override fun onMapReady(googleMap: GoogleMap) {
         myMap = googleMap
         myMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        myMap.clear()
         initPostsListener()
+        myMap.setOnInfoWindowClickListener(this)
     }
 
     override fun onStart() {
         super.onStart()
+        ReadJornalFragment.journalId = null
         startOrStopServiceAsNecessary(context!!, true, locationRequest)
     }
 
@@ -175,7 +195,7 @@ class MapFragment : BaseLocationListeningFragment(), OnMapReadyCallback,
 
         if (routes[newPost.parentJournalId!!] == null) {
             routes[newPost.parentJournalId!!] = myMap.addPolyline(
-                PolylineOptions().color(resources.getColor(R.color.accent)).width(25f).clickable(
+                PolylineOptions().color(Color.argb(255, Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))).width(25f).clickable(
                     true
                 )
             )
@@ -208,5 +228,18 @@ class MapFragment : BaseLocationListeningFragment(), OnMapReadyCallback,
 
         routes[delPost.parentJournalId!!]!!.points =
             markers[delPost.parentJournalId!!]!!.map { mAndP -> mAndP.marker!!.position }
+    }
+
+    private fun clearRoutes() {
+        routes.keys.forEach { key ->
+            routes[key]!!.points = listOf()
+            routes[key]!!.remove()
+        }
+        routes.clear()
+
+        markers.forEach { markersAndPosts ->
+            markersAndPosts.value.clear()
+        }
+        markers.clear()
     }
 }

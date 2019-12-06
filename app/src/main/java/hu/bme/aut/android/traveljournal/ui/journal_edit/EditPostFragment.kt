@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.android.traveljournal.JournalsActivity
 import hu.bme.aut.android.traveljournal.R
+import hu.bme.aut.android.traveljournal.extensions.validateNonEmpty
 import kotlinx.android.synthetic.main.fragment_edit_post.*
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
@@ -62,14 +64,18 @@ class EditPostFragment : Fragment() {
         }
 
         btnSave.setOnClickListener {
-            btnSave.isEnabled = false
-            if (imgAttached.visibility != View.VISIBLE) {
-                uploadPost()
+            if (!etPostTitle.validateNonEmpty()) {
+                Toast.makeText(context, "Missing post title!", Toast.LENGTH_SHORT).show()
             } else {
-                try {
-                    uploadPostWithImage()
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                btnSave.isEnabled = false
+                if (imgAttached.visibility != View.VISIBLE) {
+                    uploadPost()
+                } else {
+                    try {
+                        uploadPostWithImage()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }

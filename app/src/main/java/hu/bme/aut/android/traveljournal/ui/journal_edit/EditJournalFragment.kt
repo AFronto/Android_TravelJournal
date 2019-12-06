@@ -23,11 +23,12 @@ import kotlinx.android.synthetic.main.fragment_edit_journal.*
 
 class EditJournalFragment : BaseLocationListeningFragment(), PostsAdapter.PostClickListener{
     override fun firstLocationRecived() {
+        Toast.makeText(context,"Location acquired!",Toast.LENGTH_SHORT).show()
     }
 
     override fun onItemLongClick(post: Post, view: View): Boolean {
         val popup = PopupMenu(context, view)
-        popup.inflate(R.menu.menu_todo)
+        popup.inflate(R.menu.menu_pop_up)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.delete -> deletePost(post)
